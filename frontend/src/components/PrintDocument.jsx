@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import {  } from 'react'
 
 export function genererPDF(elementId, nomFichier) {
   const element = document.getElementById(elementId)
