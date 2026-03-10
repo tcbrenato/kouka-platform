@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  header { display: none !important; }
+  .no-print { display: none !important; }
+  body, main {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  .print-document { display: block !important; }
+
+  @page {
+    margin: 0;
+    size: A4;
+  }
+}
+
+@media screen {
+  .print-document { display: none !important; }
+}
