@@ -1,9 +1,56 @@
 import React from 'react'
 
 export function genererPDF(elementId, nomFichier) {
-  // Méthode fiable : utiliser window.print() 
-  // Le navigateur propose automatiquement "Enregistrer en PDF"
-  window.print()
+  const element = document.getElementById(elementId)
+  if (!element) {
+    alert('Document introuvable')
+    return
+  }
+
+  // Forcer la visibilité
+  element.style.display = 'block'
+  element.style.visibility = 'visible'
+  element.style.opacity = '1'
+  element.style.position = 'absolute'
+  element.style.left = '-9999px'
+  element.style.top = '0'
+  element.style.width = '800px'
+  element.style.background = 'white'
+  element.style.zIndex = '9999'
+
+  setTimeout(() => {
+    const html2pdf = window.html2pdf
+    if (!html2pdf) {
+      alert('html2pdf non chargé')
+      element.style.display = 'none'
+      return
+    }
+
+    html2pdf()
+      .set({
+        margin: [8, 8, 8, 8],
+        filename: nomFichier,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 800,
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+      .from(element)
+      .save()
+      .then(() => {
+        element.style.display = 'none'
+        element.style.position = ''
+        element.style.left = ''
+        element.style.top = ''
+        element.style.width = ''
+        element.style.zIndex = ''
+      })
+  }, 300)
 }
 
 export default function PrintDocument({ type, destinataire, lignes, totalHT, tva, aib, totalTTC, modalite, validite, remarques }) {
@@ -22,15 +69,20 @@ export default function PrintDocument({ type, destinataire, lignes, totalHT, tva
   const numero = `${prefixNumero}-${dateCode}-${seq}`
 
   return (
-    <div className="print-document" id="document-imprimable" style={{
-      fontFamily: "'Arial', sans-serif",
-      padding: '32px 36px',
-      maxWidth: '780px',
-      margin: '0 auto',
-      color: '#1a1a2e',
-      background: 'white',
-      fontSize: '12px',
-    }}>
+    <div
+      className="print-document"
+      id="document-imprimable"
+      style={{
+        display: 'none',
+        fontFamily: "'Arial', sans-serif",
+        padding: '32px 36px',
+        maxWidth: '780px',
+        margin: '0 auto',
+        color: '#1a1a2e',
+        background: 'white',
+        fontSize: '12px',
+      }}
+    >
 
       {/* EN-TÊTE */}
       <div style={{
@@ -79,11 +131,11 @@ export default function PrintDocument({ type, destinataire, lignes, totalHT, tva
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', border: '1px solid #e2e8f0' }}>
         <thead>
           <tr style={{ background: '#1B3A5C' }}>
-            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', textAlign: 'left', width: '80px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Code</th>
-            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', textAlign: 'left', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Désignation</th>
-            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', textAlign: 'center', width: '55px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Qté</th>
-            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', textAlign: 'right', width: '110px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>P.U (FCFA)</th>
-            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', textAlign: 'right', width: '120px' }}>Montant (FCFA)</th>
+            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', textAlign: 'left', width: '80px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Code</th>
+            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', textAlign: 'left', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Désignation</th>
+            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', textAlign: 'center', width: '55px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>Qté</th>
+            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', textAlign: 'right', width: '110px', borderRight: '1px solid rgba(255,255,255,0.15)' }}>P.U (FCFA)</th>
+            <th style={{ padding: '10px 12px', color: 'white', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', textAlign: 'right', width: '120px' }}>Montant (FCFA)</th>
           </tr>
         </thead>
         <tbody>
@@ -159,7 +211,7 @@ export default function PrintDocument({ type, destinataire, lignes, totalHT, tva
           <div style={{ fontSize: '12px', fontWeight: '700', color: '#1B3A5C' }}>CHAGOURY Malak</div>
           <div style={{ fontSize: '10px', color: '#888' }}>MALAK AND CO</div>
         </div>
-      </div> 
+      </div>
 
       {/* PIED DE PAGE */}
       <div style={{ borderTop: '2px solid #1B3A5C', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#888' }}>
