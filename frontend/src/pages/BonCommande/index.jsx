@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Plus, Trash2, ShoppingCart, Printer } from 'lucide-react'
-import PrintDocument from '../../components/PrintDocument'
+import { Plus, Trash2, ShoppingCart, Printer, Download } from 'lucide-react'
+import PrintDocument, { genererPDF } from '../../components/PrintDocument'
 
 const TVA_RATE = 0.18
 const AIB_RATE = 0.01
@@ -11,6 +11,7 @@ export default function BonCommande() {
   const [fournisseur, setFournisseur] = useState({ nom: '', adresse: '', tel: '', email: '', ifu: '', rccm: '' })
   const [lignes, setLignes] = useState([{ designation: '', quantite: 1, prix_unitaire: 0 }])
   const [modalite, setModalite] = useState('Paiement sous 30 jours à réception de la facture.')
+  const [remarques, setRemarques] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -69,10 +70,15 @@ export default function BonCommande() {
     setSaving(false)
   }
 
+  function telechargerPDF() {
+    const d = new Date()
+    const nom = `BC-${fournisseur.nom || 'fournisseur'}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.pdf`
+    genererPDF('document-imprimable', nom)
+  }
+
   return (
     <div className="space-y-6 pb-10">
 
-      {/* FORMULAIRE - caché à l'impression */}
       <div className="no-print space-y-6">
 
         {/* TITRE */}
@@ -82,6 +88,9 @@ export default function BonCommande() {
             <h2 className="text-xl font-bold text-navy-dark">Bon de Commande</h2>
           </div>
           <div className="flex gap-2">
+            <button onClick={telechargerPDF} className="flex items-center gap-2 border border-green-600 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-600 hover:text-white transition">
+              <Download size={15} /> PDF
+            </button>
             <button onClick={() => window.print()} className="flex items-center gap-2 border border-navy-dark text-navy-dark px-4 py-2 rounded-lg text-sm hover:bg-navy-dark hover:text-white transition">
               <Printer size={15} /> Imprimer
             </button>
@@ -128,10 +137,25 @@ export default function BonCommande() {
           </div>
         </div>
 
-        {/* MODALITES */}
-        <div className="bg-white rounded-2xl shadow-md p-5">
-          <h3 className="font-semibold text-navy-dark text-sm uppercase tracking-wide mb-3">Modalités de paiement</h3>
-          <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" rows={2} value={modalite} onChange={e => setModalite(e.target.value)} />
+        {/* MODALITES + REMARQUES */}
+        <div className="bg-white rounded-2xl shadow-md p-5 space-y-4">
+          <h3 className="font-semibold text-navy-dark text-sm uppercase tracking-wide">Conditions & Remarques</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Modalités de paiement</label>
+              <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" rows={3} value={modalite} onChange={e => setModalite(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Notes / Remarques</label>
+              <textarea
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                rows={3}
+                placeholder="Ex: Livraison urgente, conditionnement spécial, références à mentionner..."
+                value={remarques}
+                onChange={e => setRemarques(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         {/* LIGNES PRODUITS */}
@@ -199,6 +223,7 @@ export default function BonCommande() {
         aib={aib}
         totalTTC={totalTTC}
         modalite={modalite}
+        remarques={remarques}
       />
     </div>
   )

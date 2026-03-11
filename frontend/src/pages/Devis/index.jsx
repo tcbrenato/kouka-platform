@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Plus, Trash2, ClipboardList, Printer } from 'lucide-react'
-import PrintDocument from '../../components/PrintDocument'
+import { Plus, Trash2, ClipboardList, Printer, Download } from 'lucide-react'
+import PrintDocument, { genererPDF } from '../../components/PrintDocument'
 
 const TVA_RATE = 0.18
 
@@ -68,10 +68,15 @@ export default function Devis() {
     setSaving(false)
   }
 
+  function telechargerPDF() {
+    const d = new Date()
+    const nom = `Devis-${client.nom || 'client'}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.pdf`
+    genererPDF('document-imprimable', nom)
+  }
+
   return (
     <div className="space-y-6 pb-10">
 
-      {/* FORMULAIRE - caché à l'impression */}
       <div className="no-print space-y-6">
 
         {/* TITRE */}
@@ -81,6 +86,9 @@ export default function Devis() {
             <h2 className="text-xl font-bold text-navy-dark">Devis / Proforma</h2>
           </div>
           <div className="flex gap-2">
+            <button onClick={telechargerPDF} className="flex items-center gap-2 border border-green-600 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-600 hover:text-white transition">
+              <Download size={15} /> PDF
+            </button>
             <button onClick={() => window.print()} className="flex items-center gap-2 border border-navy-dark text-navy-dark px-4 py-2 rounded-lg text-sm hover:bg-navy-dark hover:text-white transition">
               <Printer size={15} /> Imprimer
             </button>
