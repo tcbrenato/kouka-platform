@@ -3,22 +3,48 @@
 @tailwind utilities;
 
 @media print {
-  header { display: none !important; }
-  .no-print { display: none !important; }
+  /* Cacher tout sauf le document */
+  header,
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset body */
   body, main {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
     max-width: 100% !important;
   }
-  .print-document { display: block !important; }
+
+  /* Forcer les couleurs et bordures à l'impression */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Afficher le document */
+  .print-document {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 
   @page {
-    margin: 0;
+    margin: 10mm;
     size: A4;
   }
 }
 
 @media screen {
-  .print-document { display: none !important; }
+  .print-document {
+    display: none !important;
+  }
 }
