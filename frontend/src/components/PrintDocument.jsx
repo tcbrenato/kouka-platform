@@ -3,14 +3,22 @@ import React from 'react'
 export function genererPDF(elementId, nomFichier) {
   const element = document.getElementById(elementId)
   if (!element) return
+
+  // Rendre visible temporairement pour la capture
+  const oldStyle = element.style.cssText
+  element.style.cssText = 'display:block !important; visibility:visible !important; position:fixed; top:-9999px; left:0; z-index:-1;'
+
   const html2pdf = window.html2pdf
   html2pdf().set({
     margin: [8, 8, 8, 8],
     filename: nomFichier,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(element).save()
+  }).from(element).save().then(() => {
+    // Restaurer l'état original
+    element.style.cssText = oldStyle
+  })
 }
 
 export default function PrintDocument({ type, destinataire, lignes, totalHT, tva, aib, totalTTC, modalite, validite, remarques }) {
@@ -166,7 +174,7 @@ export default function PrintDocument({ type, destinataire, lignes, totalHT, tva
           <div style={{ fontSize: '12px', fontWeight: '700', color: '#1B3A5C' }}>CHAGOURY Malak</div>
           <div style={{ fontSize: '10px', color: '#888' }}>MALAK AND CO</div>
         </div>
-      </div>
+      </div> 
 
       {/* PIED DE PAGE */}
       <div style={{ borderTop: '2px solid #1B3A5C', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#888' }}>
