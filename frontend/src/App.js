@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import Welcome from './pages/Welcome'
 import Facture from './pages/Facture'
 import Devis from './pages/Devis'
 import BonCommande from './pages/BonCommande'
@@ -11,7 +12,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/facture" />} />
+          <Route index element={<Welcome />} />
           <Route path="facture" element={<Facture />} />
           <Route path="devis" element={<Devis />} />
           <Route path="bon-commande" element={<BonCommande />} />
