@@ -69,10 +69,8 @@ export default function Devis() {
   }
 
   function telechargerPDF() {
-    const d = new Date()
-    const nom = `Devis-${client.nom || 'client'}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.pdf`
-    genererPDF('document-imprimable', nom)
-  }
+  window.print()
+}
 
   return (
     <div className="space-y-6 pb-10">

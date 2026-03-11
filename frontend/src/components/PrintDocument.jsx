@@ -1,24 +1,9 @@
 import React from 'react'
 
 export function genererPDF(elementId, nomFichier) {
-  const element = document.getElementById(elementId)
-  if (!element) return
-
-  // Rendre visible temporairement pour la capture
-  const oldStyle = element.style.cssText
-  element.style.cssText = 'display:block !important; visibility:visible !important; position:fixed; top:-9999px; left:0; z-index:-1;'
-
-  const html2pdf = window.html2pdf
-  html2pdf().set({
-    margin: [8, 8, 8, 8],
-    filename: nomFichier,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(element).save().then(() => {
-    // Restaurer l'état original
-    element.style.cssText = oldStyle
-  })
+  // Méthode fiable : utiliser window.print() 
+  // Le navigateur propose automatiquement "Enregistrer en PDF"
+  window.print()
 }
 
 export default function PrintDocument({ type, destinataire, lignes, totalHT, tva, aib, totalTTC, modalite, validite, remarques }) {
